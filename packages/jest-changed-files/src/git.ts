@@ -52,13 +52,7 @@ const adapter: SCMAdapter = {
       );
     } else if (changedSince) {
       const committed = await findChangedFilesUsingCommand(
-        [
-          'log',
-          '--name-only',
-          '--pretty=format:',
-          'HEAD',
-          `^${changedSince}`,
-        ].concat(includePaths),
+        ['diff', '--name-only', `^${changedSince}...HEAD`].concat(includePaths),
         cwd,
       );
       const staged = await findChangedFilesUsingCommand(

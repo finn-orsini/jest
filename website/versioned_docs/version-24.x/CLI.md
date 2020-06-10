@@ -127,7 +127,8 @@ Runs tests related to the current changes and the changes made in the last commi
 
 ### `--changedSince`
 
-Runs tests related to the changes since the provided branch. If the current branch has diverged from the given branch, then only changes made locally will be tested. Behaves similarly to `--onlyChanged`.
+<!-- SORSINI TODO: Can't make docs git specific -->
+Runs tests related to the changes since the provided revision. If the current `HEAD` has diverged from the given revision, then only changes made locally will be tested. Behaves similarly to `--onlyChanged`.
 
 ### `--ci`
 
