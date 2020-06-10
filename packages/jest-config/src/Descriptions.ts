@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {Config} from '@jest/types';
+import type {Config} from '@jest/types';
 
 const descriptions: {[key in keyof Config.InitialOptions]: string} = {
   automock: 'All imported modules in your tests should be mocked automatically',
   bail: 'Stop running tests after `n` failures',
-  browser: 'Respect "browser" field in package.json when resolving modules',
   cacheDirectory:
     'The directory where Jest should store its cached dependency information',
   clearMocks: 'Automatically clear mock calls and instances between every test',
@@ -22,6 +21,8 @@ const descriptions: {[key in keyof Config.InitialOptions]: string} = {
     'The directory where Jest should output its coverage files',
   coveragePathIgnorePatterns:
     'An array of regexp pattern strings used to skip coverage collection',
+  coverageProvider:
+    'Indicates which provider should be used to instrument code for coverage',
   coverageReporters:
     'A list of reporter names that Jest uses when writing coverage reports',
   coverageThreshold:

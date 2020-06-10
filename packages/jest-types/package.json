@@ -1,13 +1,13 @@
 {
   "name": "@jest/types",
-  "version": "25.1.0",
+  "version": "26.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/facebook/jest.git",
     "directory": "packages/jest-types"
   },
   "engines": {
-    "node": ">= 8.3"
+    "node": ">= 10.14.2"
   },
   "license": "MIT",
   "main": "build/index.js",
@@ -16,7 +16,7 @@
     "@types/istanbul-lib-coverage": "^2.0.0",
     "@types/istanbul-reports": "^1.1.1",
     "@types/yargs": "^15.0.0",
-    "chalk": "^3.0.0"
+    "chalk": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "*"

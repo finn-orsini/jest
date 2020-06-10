@@ -19,7 +19,7 @@ const DEFAULT_CSS_PATTERN = '^.+\\.(css)$';
 jest
   .mock('jest-resolve')
   .mock('path', () => jest.requireActual('path').posix)
-  .mock('fs', () => {
+  .mock('graceful-fs', () => {
     const realFs = jest.requireActual('fs');
 
     return {
@@ -151,20 +151,6 @@ describe('automock', () => {
     );
 
     expect(options.automock).toBe(false);
-  });
-});
-
-describe('browser', () => {
-  it('falsy browser is not overwritten', () => {
-    const {options} = normalize(
-      {
-        browser: true,
-        rootDir: '/root/path/foo',
-      },
-      {},
-    );
-
-    expect(options.browser).toBe(true);
   });
 });
 
@@ -1251,9 +1237,11 @@ describe('preset with globals', () => {
       '/node_modules/global-foo/jest-preset.json',
       () => ({
         globals: {
+          __DEV__: false,
           config: {
             hereToStay: 'This should stay here',
           },
+          myString: 'hello world',
         },
       }),
       {virtual: true},
@@ -1268,9 +1256,11 @@ describe('preset with globals', () => {
     const {options} = normalize(
       {
         globals: {
+          __DEV__: true,
           config: {
             sideBySide: 'This should also live another day',
           },
+          myString: 'hello sunshine',
           textValue: 'This is just text',
         },
         preset: 'global-foo',
@@ -1279,17 +1269,15 @@ describe('preset with globals', () => {
       {},
     );
 
-    expect(options).toEqual(
-      expect.objectContaining({
-        globals: {
-          config: {
-            hereToStay: 'This should stay here',
-            sideBySide: 'This should also live another day',
-          },
-          textValue: 'This is just text',
-        },
-      }),
-    );
+    expect(options.globals).toEqual({
+      __DEV__: true,
+      config: {
+        hereToStay: 'This should stay here',
+        sideBySide: 'This should also live another day',
+      },
+      myString: 'hello sunshine',
+      textValue: 'This is just text',
+    });
   });
 });
 

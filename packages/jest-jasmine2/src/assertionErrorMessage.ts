@@ -12,7 +12,7 @@ import {
   printReceived,
 } from 'jest-matcher-utils';
 import chalk = require('chalk');
-import {AssertionErrorWithStack} from './types';
+import type {AssertionErrorWithStack} from './types';
 
 const assertOperatorsMap: Record<string, string> = {
   '!=': 'notEqual',
@@ -95,7 +95,7 @@ const assertMatcherHint = (
 function assertionErrorMessage(
   error: AssertionErrorWithStack,
   options: DiffOptions,
-) {
+): string {
   const {expected, actual, generatedMessage, message, operator, stack} = error;
   const diffString = diff(expected, actual, options);
   const hasCustomMessage = !generatedMessage;

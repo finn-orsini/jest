@@ -1,6 +1,6 @@
 {
   "name": "@jest/test-result",
-  "version": "25.1.0",
+  "version": "26.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/facebook/jest.git",
@@ -10,14 +10,13 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "dependencies": {
-    "@jest/console": "^25.1.0",
-    "@jest/transform": "^25.1.0",
-    "@jest/types": "^25.1.0",
+    "@jest/console": "^26.0.1",
+    "@jest/types": "^26.0.1",
     "@types/istanbul-lib-coverage": "^2.0.0",
     "collect-v8-coverage": "^1.0.0"
   },
   "engines": {
-    "node": ">= 8.3"
+    "node": ">= 10.14.2"
   },
   "publishConfig": {
     "access": "public"

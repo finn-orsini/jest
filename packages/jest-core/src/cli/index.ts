@@ -5,18 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {Config} from '@jest/types';
-import {AggregatedResult} from '@jest/test-result';
+import type {Config} from '@jest/types';
+import type {AggregatedResult} from '@jest/test-result';
 import {CustomConsole} from '@jest/console';
 import {createDirectory, preRunMessage} from 'jest-util';
 import {readConfigs} from 'jest-config';
 import Runtime = require('jest-runtime');
-import {ChangedFilesPromise} from 'jest-changed-files';
+import type {ChangedFilesPromise} from 'jest-changed-files';
 import HasteMap = require('jest-haste-map');
 import chalk = require('chalk');
 import rimraf = require('rimraf');
 import exit = require('exit');
-import {Filter} from '../types';
+import type {Filter} from '../types';
 import createContext from '../lib/create_context';
 import getChangedFilesPromise from '../getChangedFilesPromise';
 import {formatHandleErrors} from '../collectHandles';
@@ -26,6 +26,9 @@ import TestWatcher from '../TestWatcher';
 import watch from '../watch';
 import pluralize from '../pluralize';
 import logDebugMessages from '../lib/log_debug_messages';
+import getConfigsOfProjectsToRun from '../getConfigsOfProjectsToRun';
+import getProjectNamesMissingWarning from '../getProjectNamesMissingWarning';
+import getSelectProjectsMessage from '../getSelectProjectsMessage';
 
 const {print: preRunMessagePrint} = preRunMessage;
 
@@ -38,10 +41,6 @@ export async function runCLI(
   results: AggregatedResult;
   globalConfig: Config.GlobalConfig;
 }> {
-  const realFs = require('fs');
-  const fs = require('graceful-fs');
-  fs.gracefulify(realFs);
-
   let results: AggregatedResult | undefined;
 
   // If we output a JSON object, we can't write anything to stdout, since
@@ -72,9 +71,22 @@ export async function runCLI(
     exit(0);
   }
 
-  await _run(
+  let configsOfProjectsToRun = configs;
+  if (argv.selectProjects) {
+    const namesMissingWarning = getProjectNamesMissingWarning(configs);
+    if (namesMissingWarning) {
+      outputStream.write(namesMissingWarning);
+    }
+    configsOfProjectsToRun = getConfigsOfProjectsToRun(
+      argv.selectProjects,
+      configs,
+    );
+    outputStream.write(getSelectProjectsMessage(configsOfProjectsToRun));
+  }
+
+  await _run10000(
     globalConfig,
-    configs,
+    configsOfProjectsToRun,
     hasDeprecationWarnings,
     outputStream,
     r => (results = r),
@@ -138,7 +150,7 @@ const buildContextsAndHasteMaps = async (
   return {contexts, hasteMapInstances};
 };
 
-const _run = async (
+const _run10000 = async (
   globalConfig: Config.GlobalConfig,
   configs: Array<Config.ProjectConfig>,
   hasDeprecationWarnings: boolean,

@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {Arguments} from 'yargs';
-import {ReportOptions} from 'istanbul-reports';
+import type {Arguments} from 'yargs';
+import type {ReportOptions} from 'istanbul-reports';
 import chalk = require('chalk');
 
 type CoverageProvider = 'babel' | 'v8';
@@ -20,19 +20,19 @@ export type HasteConfig = {
   defaultPlatform?: string | null;
   hasteImplModulePath?: string;
   platforms?: Array<string>;
-  providesModuleNodeModules: Array<string>;
   throwOnModuleCollision?: boolean;
 };
 
 export type ReporterConfig = [string, Record<string, unknown>];
 export type TransformerConfig = [string, Record<string, unknown>];
 
-export type ConfigGlobals = Record<string, any>;
+export interface ConfigGlobals {
+  [K: string]: unknown;
+}
 
 export type DefaultOptions = {
   automock: boolean;
   bail: number;
-  browser: boolean;
   cache: boolean;
   cacheDirectory: Path;
   changedFilesWithAncestor: boolean;
@@ -84,12 +84,10 @@ export type DefaultOptions = {
   watchman: boolean;
 };
 
-export type DisplayName =
-  | string
-  | {
-      name: string;
-      color: typeof chalk.Color;
-    };
+export type DisplayName = {
+  name: string;
+  color: typeof chalk.Color;
+};
 
 export type InitialOptionsWithRootDir = InitialOptions &
   Required<Pick<InitialOptions, 'rootDir'>>;
@@ -97,7 +95,6 @@ export type InitialOptionsWithRootDir = InitialOptions &
 export type InitialOptions = Partial<{
   automock: boolean;
   bail: boolean | number;
-  browser: boolean;
   cache: boolean;
   cacheDirectory: Path;
   clearMocks: boolean;
@@ -120,7 +117,7 @@ export type InitialOptions = Partial<{
   dependencyExtractor: string;
   detectLeaks: boolean;
   detectOpenHandles: boolean;
-  displayName: DisplayName;
+  displayName: string | DisplayName;
   expand: boolean;
   extraGlobals: Array<string>;
   filter: Path;
@@ -299,7 +296,6 @@ export type GlobalConfig = {
 
 export type ProjectConfig = {
   automock: boolean;
-  browser: boolean;
   cache: boolean;
   cacheDirectory: Path;
   clearMocks: boolean;
@@ -343,10 +339,10 @@ export type ProjectConfig = {
   testMatch: Array<Glob>;
   testLocationInResults: boolean;
   testPathIgnorePatterns: Array<string>;
-  testRegex: Array<string>;
+  testRegex: Array<string | RegExp>;
   testRunner: string;
   testURL: string;
-  timers: 'real' | 'fake';
+  timers: 'real' | 'fake' | 'modern' | 'legacy';
   transform: Array<[string, Path, Record<string, unknown>]>;
   transformIgnorePatterns: Array<Glob>;
   watchPathIgnorePatterns: Array<string>;
@@ -358,7 +354,6 @@ export type Argv = Arguments<
     all: boolean;
     automock: boolean;
     bail: boolean | number;
-    browser: boolean;
     cache: boolean;
     cacheDirectory: string;
     changedFilesWithAncestor: boolean;
@@ -411,6 +406,7 @@ export type Argv = Arguments<
     rootDir: string;
     roots: Array<string>;
     runInBand: boolean;
+    selectProjects: Array<string>;
     setupFiles: Array<string>;
     setupFilesAfterEnv: Array<string>;
     showConfig: boolean;

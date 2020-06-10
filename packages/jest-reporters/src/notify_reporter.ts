@@ -8,10 +8,10 @@
 import * as path from 'path';
 import * as util from 'util';
 import exit = require('exit');
-import {Config} from '@jest/types';
-import {AggregatedResult} from '@jest/test-result';
+import type {Config} from '@jest/types';
+import type {AggregatedResult} from '@jest/test-result';
 import {pluralize} from 'jest-util';
-import {Context, TestSchedulerContext} from './types';
+import type {Context, TestSchedulerContext} from './types';
 import BaseReporter from './base_reporter';
 
 const isDarwin = process.platform === 'darwin';
@@ -79,7 +79,6 @@ export default class NotifyReporter extends BaseReporter {
         result.numPassedTests,
       )} passed`;
 
-      // @ts-ignore: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/42303
       this._notifier.notify({icon, message, timeout: false, title});
     } else if (
       testsHaveRun &&
@@ -108,7 +107,6 @@ export default class NotifyReporter extends BaseReporter {
       const quitAnswer = 'Exit tests';
 
       if (!watchMode) {
-        // @ts-ignore: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/42303
         this._notifier.notify({icon, message, timeout: false, title});
       } else {
         this._notifier.notify(

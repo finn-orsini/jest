@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as fs from 'fs';
-import {Config} from '@jest/types';
+import * as fs from 'graceful-fs';
+import type {Config} from '@jest/types';
 
 import {getStackTraceLines, getTopFrame} from 'jest-message-util';
 import {
@@ -20,7 +20,7 @@ import {
   testNameToKey,
 } from './utils';
 import {InlineSnapshot, saveInlineSnapshots} from './inline_snapshots';
-import {SnapshotData} from './types';
+import type {SnapshotData} from './types';
 
 export type SnapshotStateOptions = {
   updateSnapshot: Config.SnapshotUpdateState;
@@ -54,7 +54,7 @@ type SaveStatus = {
 export default class SnapshotState {
   private _counters: Map<string, number>;
   private _dirty: boolean;
-  // @ts-ignore
+  // @ts-expect-error
   private _index: number;
   private _updateSnapshot: Config.SnapshotUpdateState;
   private _snapshotData: SnapshotData;

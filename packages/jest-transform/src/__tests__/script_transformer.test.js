@@ -10,10 +10,10 @@ import {wrap} from 'jest-snapshot-serializer-raw';
 import {makeGlobalConfig, makeProjectConfig} from '../../../../TestUtils';
 
 jest
-  .mock('fs', () =>
+  .mock('graceful-fs', () =>
     // Node 10.5.x compatibility
     ({
-      ...jest.genMockFromModule('fs'),
+      ...jest.createMockFromModule('fs'),
       ReadStream: jest.requireActual('fs').ReadStream,
       WriteStream: jest.requireActual('fs').WriteStream,
       readFileSync: jest.fn((path, options) => {
@@ -29,7 +29,12 @@ jest
       }),
     }),
   )
-  .mock('graceful-fs')
+  .mock('graceful-fs', () => ({
+    ...jest.requireActual('graceful-fs'),
+    realPathSync: {
+      native: dirInput => dirInput,
+    },
+  }))
   .mock('jest-haste-map', () => ({
     getCacheFilePath: (cacheDir, baseDir, version) => cacheDir + baseDir,
   }))
@@ -407,6 +412,7 @@ describe('ScriptTransformer', () => {
     expect(writeFileAtomic.sync).toBeCalledTimes(2);
     expect(writeFileAtomic.sync).toBeCalledWith(result.sourceMapPath, mapStr, {
       encoding: 'utf8',
+      fsync: false,
     });
   });
 
@@ -438,7 +444,7 @@ describe('ScriptTransformer', () => {
     expect(writeFileAtomic.sync).toBeCalledWith(
       result.sourceMapPath,
       sourceMap,
-      {encoding: 'utf8'},
+      {encoding: 'utf8', fsync: false},
     );
   });
 
@@ -461,9 +467,7 @@ describe('ScriptTransformer', () => {
     const content =
       'var x = 1;\n' +
       '//# sourceMappingURL=data:application/json;base64,' +
-      Buffer.from(sourceMap)
-        .toString('base64')
-        .slice(0, 16);
+      Buffer.from(sourceMap).toString('base64').slice(0, 16);
 
     require('preprocessor-with-sourcemaps').process.mockReturnValue(content);
 
@@ -509,6 +513,7 @@ describe('ScriptTransformer', () => {
       JSON.stringify(map),
       {
         encoding: 'utf8',
+        fsync: false,
       },
     );
   });
@@ -553,7 +558,8 @@ describe('ScriptTransformer', () => {
       version: 3,
       sources: ['banana.js'],
       names: ['content'],
-      mappings: ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAAA,OAAO',
+      mappings:
+        ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAeY;;;;;;;;;;AAfZA,OAAO',
       sourcesContent: ['content'],
     };
     /* eslint-enable */
@@ -574,9 +580,7 @@ describe('ScriptTransformer', () => {
     expect(writeFileAtomic.sync).toBeCalledWith(
       result.sourceMapPath,
       JSON.stringify(instrumentedCodeMap),
-      {
-        encoding: 'utf8',
-      },
+      expect.anything(),
     );
 
     // Inline source map allows debugging of original source when running instrumented code
@@ -593,7 +597,7 @@ describe('ScriptTransformer', () => {
       sources: ['banana.js'],
       names: ['module', 'exports'],
       mappings:
-        ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAAA,MAAM,CAACC,OAAP,GAAiB,QAAjB',
+        ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAeY;;;;;;;;;;AAfZA,MAAM,CAACC,OAAP,GAAiB,QAAjB',
       sourcesContent: ['module.exports = "banana";'],
     };
     /* eslint-enable */
@@ -614,9 +618,7 @@ describe('ScriptTransformer', () => {
     expect(writeFileAtomic.sync).toBeCalledWith(
       result.sourceMapPath,
       JSON.stringify(instrumentedCodeMap),
-      {
-        encoding: 'utf8',
-      },
+      expect.anything(),
     );
 
     // Inline source map allows debugging of original source when running instrumented code
